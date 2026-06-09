@@ -54,7 +54,7 @@ To retrieve the matching records, the browser queries this exact public API endp
 
 👉 https://api.pwnedpasswords.com/range/2AAE6
 
-The database looks up its records and sends back a list of all compromised suffixes that share our exact prefix. Because the server already knows the prefix we sent, it only returns the remaining suffixes to save bandwidth. The raw response looks like this:
+The database looks up its records and sends back a list of all compromised suffixes that share our exact prefix. To save bandwidth, the server only returns the remaining suffixes. The raw response looks like this:
 
 001D6E799D79FEE2D16C374D6CFA0DA89A89:1  
 01DFBE61661D79E7FA3A849B45C4197EFB3:4  
@@ -62,19 +62,21 @@ C35C94FCFB415DBE95F408B9CE91EE846ED:583274
 F9A27F1CD86C1D04FAEF32E7B165BC48A04:12  
 FDF863B8B8E85E8687D2FA6ED56D9F36965:85
 
+*(Note: To save bandwidth, the real database only transmits the raw suffix list over the wire, and your browser automatically prepends the prefix locally in your machine memory).*
+
 ### **Phase D: The Local Match & Reconstruction**
 
-Now, completely inside your browser memory, Aegis processes the response. To perform a secure lookup, it temporarily recombines your prefix with each downloaded suffix.
+Now, completely inside your browser memory, Aegis processes the response. To perform a secure lookup, it temporarily recombines your prefix with each downloaded suffix. Because some monospaced fonts render special characters with irregular widths, we list the indicators on the right of our table to ensure the columns are perfectly aligned.
 
-Here is how the matching process looks inside your active browser memory with the prefix highlighted:
+Here is how the matching process looks inside your active browser memory:
 
-  Reconstructed Hash in RAM                        Leak Count  
-  \-----------------------------------------------  \----------  
-  \[2AAE6\]001D6E799D79FEE2D16C374D6CFA0DA89A89      1  
-  \[2AAE6\]01DFBE61661D79E7FA3A849B45C4197EFB3      4  
-★ \[2AAE6\]C35C94FCFB415DBE95F408B9CE91EE846ED      583274  \<-- MATCH DETECTED\!  
-  \[2AAE6\]F9A27F1CD86C1D04FAEF32E7B165BC48A04      12  
-  \[2AAE6\]FDF863B8B8E85E8687D2FA6ED56D9F36965      85
+Reconstructed Hash in RAM                      Leak Count  Status Indicator  
+\---------------------------------------------  \----------  \----------------  
+\[2AAE6\]001D6E799D79FEE2D16C374D6CFA0DA89A89    1             
+\[2AAE6\]01DFBE61661D79E7FA3A849B45C4197EFB3    4             
+\[2AAE6\]C35C94FCFB415DBE95F408B9CE91EE846ED    583274      ★ MATCH DETECTED\!  
+\[2AAE6\]F9A27F1CD86C1D04FAEF32E7B165BC48A04    12            
+\[2AAE6\]FDF863B8B8E85E8687D2FA6ED56D9F36965    85          
 
 Aegis instantly flags your password as **Compromised** because the reconstructed signature matches your local hash exactly.
 
