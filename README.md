@@ -35,7 +35,7 @@ To see exactly how your private data is protected, let us trace what happens und
 The browser takes your password and calculates its unique cryptographic signature using the SHA 1 algorithm.
 
 * **Plaintext Password:** hello world  
-* **Scrambled Signature:** 2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
+* **Scrambled Signature:** 2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED
 
 This signature is completely unique to your password. However, Aegis will not send this entire code over the internet.
 
@@ -43,24 +43,30 @@ This signature is completely unique to your password. However, Aegis will not se
 
 The application splits this forty character signature into two distinct parts:
 
-* **The Routing Prefix (The first five characters):** 2aae6  
-* **The Private Suffix (The remaining thirty five characters):** 35c94fcfb415dbe95f408b9ce91ee846ed
+* **The Routing Prefix (The first five characters):** 2AAE6  
+* **The Private Suffix (The remaining thirty five characters):** C35C94FCFB415DBE95F408B9CE91EE846ED
 
 ### **Phase C: The Anonymous Inquiry**
 
-Aegis sends only the five character prefix (2aae6) to the secure Have I Been Pwned database. Because millions of different passwords generate signatures starting with those same five letters, the database server has absolutely no way of knowing which password you are checking.
+Aegis sends only the five character prefix (2AAE6) to the secure Have I Been Pwned database. Because millions of different passwords generate signatures starting with those same five letters, the database server has absolutely no way of knowing which password you are checking.
 
-The database looks up its records and sends back a bucket of all compromised suffixes that match our prefix. The list you receive back in your browser will look similar to this:
+To retrieve the matching records, the browser queries this exact public API endpoint:
 
-35c94fcfb415dbe95f408b9ce91ee846ed:500  
-8f20b33da2219c67cf8f41029baee24f91e:12  
-1cd04faef32e7b165bc48a04df9ec310ef4:85
+👉 https://api.pwnedpasswords.com/range/2AAE6
+
+The database looks up its records and sends back a list of all compromised suffixes that share our exact prefix. The actual raw response received by your browser contains hundreds of entries and looks like this:
+
+001D6E799D79FEE2D16C374D6CFA0DA89A89:1  
+01DFBE61661D79E7FA3A849B45C4197EFB3:4  
+C35C94FCFB415DBE95F408B9CE91EE846ED:583274  
+F9A27F1CD86C1D04FAEF32E7B165BC48A04:12  
+FDF863B8B8E85E8687D2FA6ED56D9F36965:85
 
 ### **Phase D: The Local Match**
 
-Now, completely inside your browser memory, Aegis searches this list. It notices that our private suffix (35c94fcfb415dbe95f408b9ce91ee846ed) is right there at the top.
+Now, completely inside your browser memory, Aegis searches this downloaded list. It notices that our private suffix (C35C94FCFB415DBE95F408B9CE91EE846ED) is present right there in the middle of the response.
 
-Aegis flags this password as **Compromised** and reports that it has appeared in data leaks five hundred times.
+Aegis flags this password as **Compromised** and reports that it has appeared in public data breaches over five hundred thousand times.
 
 ## **🚀 How to Run the Portable Version (No Installation Required)**
 
